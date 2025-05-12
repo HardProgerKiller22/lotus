@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Товары - Lotus маркетплейс</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+<body>
+    <div id="welcome">
+        <label><b>Товары</b></label>
+        <a href="{{ url_for('home') }}" class="circles">
+            <i class="fas fa-home"></i>
+        </a>
+        <a href="{{ url_for('profile') }}" class="circles">
+            <i class="fas fa-user"></i>
+        </a>
+        <a href="{{ url_for('cart') }}" class="circles">
+            <i class="fas fa-shopping-cart"></i>
+        </a>
+        <a href="{{ url_for('favorites') }}" class="circles">
+            <i class="fas fa-heart"></i>
+        </a>
+    </div>
+    <div class="search-container">
+        <form method="GET" action="{{ url_for('products') }}">
+            <input id="search" name="query" placeholder="Поиск..." value="{{ query or '' }}">
+            <button type="submit" class="search-btn">Найти</button>
+        </form>
+    </div>
+    <div class="form-container" style="width: 80%; margin-top: 20px;">
+        <div style="display: flex; justify-content: center; flex-wrap: wrap;">
+            <a href="{{ url_for('products') }}" class="category-circle">
+                <i class="fas fa-th"></i>
+            </a>
+            <a href="{{ url_for('products', category='Одежда') }}" class="category-circle">
+                <i class="fas fa-tshirt"></i>
+            </a>
+            <a href="{{ url_for('products', category='Товары для дома') }}" class="category-circle">
+                <i class="fas fa-home"></i>
+            </a>
+            <a href="{{ url_for('products', category='Детские товары') }}" class="category-circle">
+                <i class="fas fa-baby"></i>
+            </a>
+            <a href="{{ url_for('products', category='Электроника') }}" class="category-circle">
+                <i class="fas fa-mobile-alt"></i>
+            </a>
+            <a href="{{ url_for('products', category='Хобби и развлечения') }}" class="category-circle">
+                <i class="fas fa-gamepad"></i>
+            </a>
+        </div>
+    </div>
+    <div class="purchases-container" style="width: 80%;">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    <div class="flash-{{ category }}">{{ message }}</div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        <h2>{{ selected_category if selected_category else 'Все товары' }}</h2>
+        {% if products %}
+            {% for product in products %}
+                <div style="display: flex; align-items: center;">
+                    <a href="{{ url_for('add_to_cart', product_id=product.id) }}" class="purchase-item" style="flex-grow: 1;">
+                        <span>{{ product.name }}</span>
+                        <span>{{ product.price }} ₽</span>
+                    </a>
+                    <div style="display: flex; align-items: center; margin-left: 5px;">
+                        <a href="{{ url_for('add_to_favorites', product_id=product.id) }}" class="favorite-item" style="margin-right: 5px;">
+                            <i class="fas fa-heart"></i>
+                        </a>
+                        {% if current_user.is_authenticated and current_user.username == 'admin' %}
+                            <a href="{{ url_for('delete_product', product_id=product.id) }}" class="favorite-item">
+                                <i class="fas fa-trash"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>Товаров в этой категории пока нет.</p>
+        {% endif %}
+    </div>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93e65a54eded673c',t:'MTc0NzAxNTU0NS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
